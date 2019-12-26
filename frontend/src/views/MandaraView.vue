@@ -1,42 +1,8 @@
 <template>
   <div class="mandara">
     <div class="container">
-      <div class="row">
-        <div class="col-sm border">
-          One of three columns
-        </div>
-        <div class="col-sm border">
-          One of three columns
-        </div>
-        <div class="col-sm border">
-          One of three columns
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-sm border">
-          One of three columns
-        </div>
-        <div class="col-sm border">
-          One of three columns
-        </div>
-        <div class="col-sm border">
-          One of three columns
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-sm border">
-          One of three columns
-        </div>
-        <div class="col-sm border">
-          One of three columns
-        </div>
-        <div class="col-sm border">
-          One of three columns
-        </div>
+      <div class="row" v-for="(row,rowKey) in mandaraMatrix" :key="rowKey">
+        <MandaraBox v-for="(col) in row" :key="col" />
       </div>
     </div>
   </div>
@@ -47,9 +13,15 @@ import {
   Vue,
   Component,
 } from 'vue-property-decorator';
+import MandaraBox from '../components/MandaraBox.vue';
 
-@Component
+@Component({
+  components: {
+    MandaraBox,
+  },
+})
 export default class MandaraView extends Vue {
+  mandaraMatrix: Array<Array<number>> = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 }
 </script>
 
