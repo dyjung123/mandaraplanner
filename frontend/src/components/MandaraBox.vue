@@ -1,25 +1,21 @@
 <template>
   <div class="mandara-box">
     <div class="container">
-<!--      <div class="row" v-for="(row,key,index) in myGoals.row1" :key="index">-->
-      <div class="row" v-for="(value,index) in test" :key="index">
-        <div class="col-sm border">
-          {{ value }}
+      <div class="row" v-for="(row,key,rowIdx) in myGoals" :key="rowIdx">
+        <div class="col-sm border p-0" v-for="(myGoal,colIdx) in row" :key="colIdx">
+          <div class="goal-wrapper">
+            <button v-if="isMainGoal(rowIdx, colIdx)" @click.prevent="modifyGoal" class="my-goal" :class="[isWriteMainGoal ? ['animation',] : ['',]]">
+              <span v-text="myGoal">
+              </span>
+            </button>
+            <div v-else class="sub-goal">
+              <span class="sub-goal-txt" v-text="myGoal">
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-<!--        <div class="col-sm border p-0" v-for="(myGoal,k) in row" :key="k">-->
-<!--          <div class="goal-wrapper">-->
-<!--            <button @click.prevent="modifyGoal(key,k)" class="my-goal">-->
-<!--              <span v-text="myGoal">-->
-<!--              </span>-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
     </div>
-    <input type="text" v-model="index" placeholder="index">
-    <input type="text" v-model="value" placeholder="value">
-    <button @click.prevent="modifyGoal"></button>
   </div>
 </template>
 
@@ -43,9 +39,15 @@ export default class MandaraBox extends Vue {
 
   value: number = 0;
 
+  isWriteMainGoal: boolean = false;
+
   modifyGoal(): void {
-    this.test[this.index] = this.value;
+    this.isWriteMainGoal = !this.isWriteMainGoal;
     // console.log(`row : ${rowIdx}, col : ${colIdx}`);
+  }
+
+  isMainGoal(rowIdx: number, colIdx: number): boolean {
+    return rowIdx === 1 && colIdx === 1;
   }
 }
 </script>
@@ -54,6 +56,18 @@ export default class MandaraBox extends Vue {
   .goal-wrapper {
     width: 50px;
     height: 50px;
+    animation: rrotate_ani linear 1s infinite both;
+    -webkit-animation: rrotate_ani linear 1s infinite both;
+  }
+
+  @keyframes rrotate_ani {
+    0% {
+      transform: rotateY(0);
+    }
+
+    100% {
+      transform: rotateY(360deg);
+    }
   }
 
   .my-goal {
