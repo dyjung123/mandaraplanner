@@ -2,9 +2,9 @@
   <div class="mandara-box">
     <div class="container">
       <div class="row" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
-        <div class="col-sm border p-0" v-for="(myGoal,colIdx) in row" :key="colIdx">
-          <div class="goal-wrapper">
-            <button v-if="isBranchBox || isMainGoal(rowIdx, colIdx)" @click.prevent="modifyGoal" class="my-goal" :class="[isWriteMainGoal ? ['animation',] : ['',]]">
+        <div class="col-sm border p-0" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
+          <div class="goal-wrapper" :class="[isWriteMainGoal ? ['animation',] : ['',]]">
+            <button v-if="isBranchBox || isMainGoal(rowIdx, colIdx)" @click.prevent="modifyGoal" class="my-goal">
               <span v-text="myGoal">
               </span>
             </button>
@@ -32,9 +32,21 @@ export default class MandaraBox extends Vue {
   readonly mandaraIdx!: number;
 
   myGoals: object = {
-    row1: [1, 2, 3],
-    row2: [4, 5, 6],
-    row3: [7, 8, 9],
+    row1: {
+      col1: '',
+      col2: '',
+      col3: '',
+    },
+    row2: {
+      col1: '',
+      col2: '',
+      col3: '',
+    },
+    row3: {
+      col1: '',
+      col2: '',
+      col3: '',
+    },
   };
 
   test: Array<number> = [1, 2, 3];
@@ -69,6 +81,9 @@ export default class MandaraBox extends Vue {
   .goal-wrapper {
     width: 50px;
     height: 50px;
+  }
+
+  .animation {
     animation: rrotate_ani linear 1s infinite both;
     -webkit-animation: rrotate_ani linear 1s infinite both;
   }
@@ -86,7 +101,7 @@ export default class MandaraBox extends Vue {
   .my-goal {
     width: 100%;
     height: 100%;
-    box-sizing: content-box;
+    box-sizing: border-box;
     padding: 0;
   }
 </style>
