@@ -1,10 +1,10 @@
 <template>
   <div class="mandara-box">
     <div class="container">
-      <div class="row" v-for="(row,key,rowIdx) in myGoals" :key="rowIdx">
+      <div class="row" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
         <div class="col-sm border p-0" v-for="(myGoal,colIdx) in row" :key="colIdx">
           <div class="goal-wrapper">
-            <button v-if="isMainGoal(rowIdx, colIdx)" @click.prevent="modifyGoal" class="my-goal" :class="[isWriteMainGoal ? ['animation',] : ['',]]">
+            <button v-if="isBranchBox || isMainGoal(rowIdx, colIdx)" @click.prevent="modifyGoal" class="my-goal" :class="[isWriteMainGoal ? ['animation',] : ['',]]">
               <span v-text="myGoal">
               </span>
             </button>
@@ -23,10 +23,14 @@
 import {
   Vue,
   Component,
+  Prop,
 } from 'vue-property-decorator';
 
 @Component
 export default class MandaraBox extends Vue {
+  @Prop({ default: -1 })
+  readonly mandaraIdx!: number;
+
   myGoals: object = {
     row1: [1, 2, 3],
     row2: [4, 5, 6],
@@ -41,6 +45,10 @@ export default class MandaraBox extends Vue {
 
   isWriteMainGoal: boolean = false;
 
+  created() {
+    console.log('mandaraIdx', this.mandaraIdx);
+  }
+
   modifyGoal(): void {
     this.isWriteMainGoal = !this.isWriteMainGoal;
     // console.log(`row : ${rowIdx}, col : ${colIdx}`);
@@ -48,6 +56,11 @@ export default class MandaraBox extends Vue {
 
   isMainGoal(rowIdx: number, colIdx: number): boolean {
     return rowIdx === 1 && colIdx === 1;
+  }
+
+  get
+  isBranchBox(): boolean {
+    return this.mandaraIdx === 5;
   }
 }
 </script>
