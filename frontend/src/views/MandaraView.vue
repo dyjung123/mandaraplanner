@@ -2,7 +2,7 @@
   <div class="mandara">
     <div class="container">
       <div class="row" v-for="(row,rowKey) in mandaraMatrix" :key="rowKey">
-        <MandaraBox v-for="(col) in row" :key="col" />
+        <MandaraBox v-for="(col) in row" :key="col" :mandaraIdx="col"/>
       </div>
     </div>
   </div>
