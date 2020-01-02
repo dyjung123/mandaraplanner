@@ -5,6 +5,7 @@
         <MandaraBox v-for="(col) in row" :key="col" :mandaraIdx="col"/>
       </div>
     </div>
+<!--    <Input />-->
   </div>
 </template>
 
@@ -14,10 +15,12 @@ import {
   Component,
 } from 'vue-property-decorator';
 import MandaraBox from '../components/MandaraBox.vue';
+import Input from '../components/Input.vue';
 
 @Component({
   components: {
     MandaraBox,
+    Input,
   },
 })
 export default class MandaraView extends Vue {
