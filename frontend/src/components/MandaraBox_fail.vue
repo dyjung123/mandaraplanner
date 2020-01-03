@@ -3,12 +3,22 @@
     <div class="container">
       <div class="row" v-for="(row, rowKey, rowIdx) in myGoals" :key="rowIdx">
         <div class="col-sm border p-0" v-for="(myGoal, colKey, colIdx) in row" :key="colIdx">
-          <div class="goal-wrapper" :class="[isWriteMainGoal ? ['animation',] : ['',]]">
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isOkShow && isMainGoal(rowIdx, colIdx)" class="my-main-goal"><span v-text="myGoal">
-            </span>
+          <div class="goal-wrapper" :class="[isWriteRootGoal ? ['animation',] : ['',]]">
+<!--            <button v-if="isBranchBox || isMainGoal(rowIdx, colIdx)" @click.prevent="modifyGoal" class="my-goal">-->
+<!--              <span v-text="myGoal">-->
+<!--              </span>-->
+<!--            </button>-->
+<!--            <div v-else class="sub-goal">-->
+<!--              <span class="sub-goal-txt" v-text="myGoal">-->
+<!--              </span>-->
+<!--            </div>-->
+            <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isBranchBox && isMainGoal(rowIdx, colIdx) || isWriteRootGoal && isBranchBox" class="my-goal">
+              <span v-text="myGoal">
+              </span>
             </b-button>
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-else-if="isWriteMainGoal" class="my-sub-goal"><span v-text="myGoal">
-            </span>
+            <b-button v-b-modal.modal-prevent-closing v-else class="sub-goal">
+              <span class="sub-goal-txt" v-text="myGoal">
+              </span>
             </b-button>
           </div>
         </div>
@@ -23,7 +33,7 @@
       @ok.prevent="handleOk"
       no-stacking
     >
-      <!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
+<!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
       <form ref="form">
         <b-form-group
           :state="nameState"
@@ -40,6 +50,33 @@
         </b-form-group>
       </form>
     </b-modal>
+<!--    <Input />-->
+<!--    <b-button v-b-modal.modal-prevent-closing>Open Modal</b-button>-->
+
+<!--    <b-modal-->
+<!--      id="modal-prevent-closing"-->
+<!--      ref="modal"-->
+<!--      title="Submit Your Name"-->
+<!--      @show="resetModal"-->
+<!--      @hidden="resetModal"-->
+<!--      @ok.prevent="handleOk"-->
+<!--    >-->
+<!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
+<!--        <b-form-group-->
+<!--          :state="nameState"-->
+<!--          label="Name"-->
+<!--          label-for="name-input"-->
+<!--          invalid-feedback="Name is required"-->
+<!--        >-->
+<!--          <b-form-input-->
+<!--            id="name-input"-->
+<!--            v-model="name"-->
+<!--            :state="nameState"-->
+<!--            required-->
+<!--          ></b-form-input>-->
+<!--        </b-form-group>-->
+<!--      </form>-->
+<!--    </b-modal>-->
   </div>
 </template>
 
@@ -49,14 +86,26 @@ import {
   Component,
   Prop,
 } from 'vue-property-decorator';
-import { EventBus } from '../eventbus/EventBus';
+import { mapActions, mapState } from 'vuex';
+import Input from './Input.vue';
 
-@Component
-export default class MandaraBox extends Vue {
+@Component({
+  components: {
+    Input,
+  },
+  methods: {
+    ...mapActions([
+      'noRootGoal',
+      'existRootGoal',
+    ]),
+  },
+  computed: mapState([
+    'isWriteRootGoal',
+  ]),
+})
+export default class MandaraBoxFail extends Vue {
   @Prop({ default: -1 })
   readonly mandaraIdx!: number;
-
-  private isOkShow: boolean = false;
 
   myGoals: object = {
     row1: {
@@ -76,6 +125,10 @@ export default class MandaraBox extends Vue {
     },
   };
 
+  private goal: string = '';
+
+  private nameState: boolean | null = null;
+
   private clickedRowCol: object = {
     row: '',
     col: '',
@@ -83,27 +136,15 @@ export default class MandaraBox extends Vue {
 
   private isWriteMainGoal: boolean = false;
 
-  private goal: string = '';
-
-  private nameState: boolean | null = null;
+  private isWriteSubGoal: boolean = false;
 
   created() {
-    this.isOkShow = this.mandaraIdx === 5;
-    EventBus.$on('submitSubGoal', (clickedRowCol: object) => {
-
-    });
+    console.log('mandaraIdx', this.mandaraIdx);
   }
 
-  destroyed() {
-    EventBus.$off('submitSubGoal');
-  }
-
-  clickedMainGoal(): void {
-
-  }
-
-  clickedSubGoal(): void {
-
+  modifyGoal(): void {
+    // this.isWriteMainGoal = !this.isWriteMainGoal;
+    // console.log(`row : ${rowIdx}, col : ${colIdx}`);
   }
 
   showModal(rowKey: string, colKey: string): void {
@@ -155,11 +196,7 @@ export default class MandaraBox extends Vue {
     // this.isWriteMainGoal = true;
     if (this.clickedRowCol.row === 'row2' && this.clickedRowCol.col === 'col2') {
       this.existRootGoal();
-    } else {
-      EventBus.$emit('submitSubGoal', this.clickedRowCol);
     }
-
-    // TODO : 만약 제출한게 mainGoal이면 isWriteMainGoal=true
 
     this.$nextTick(() => {
       this.$refs.modal.hide();
@@ -189,8 +226,7 @@ export default class MandaraBox extends Vue {
     }
   }
 
-  .my-main-goal,
-  .my-sub-goal {
+  .my-goal {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
