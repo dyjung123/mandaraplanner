@@ -49,7 +49,6 @@ import {
   Component,
   Prop,
 } from 'vue-property-decorator';
-import { EventBus } from '../eventbus/EventBus';
 
 @Component
 export default class MandaraBox extends Vue {
@@ -89,13 +88,9 @@ export default class MandaraBox extends Vue {
 
   created() {
     this.isOkShow = this.mandaraIdx === 5;
-    EventBus.$on('submitSubGoal', (clickedRowCol: object) => {
-
-    });
   }
 
   destroyed() {
-    EventBus.$off('submitSubGoal');
   }
 
   clickedMainGoal(): void {
@@ -156,7 +151,6 @@ export default class MandaraBox extends Vue {
     if (this.clickedRowCol.row === 'row2' && this.clickedRowCol.col === 'col2') {
       this.existRootGoal();
     } else {
-      EventBus.$emit('submitSubGoal', this.clickedRowCol);
     }
 
     // TODO : 만약 제출한게 mainGoal이면 isWriteMainGoal=true

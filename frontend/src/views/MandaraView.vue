@@ -2,10 +2,11 @@
   <div class="mandara">
     <div class="container">
       <div class="row" v-for="(row,rowKey,rowIdx) in myGoals" :key="rowIdx">
-        <div class="col-sm border p-0" v-for="(myGoal,colKey,colIdx) in row" :key="colIdx">
+        <div class="column border p-0" v-for="(myGoal,colKey,colIdx) in row" :key="colIdx">
           <div class="goal-wrapper" :class="[false ? ['animation',] : ['',]]">
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isMainGoal(rowIdx, colIdx)" class="my-main-goal"><span v-text="myGoal">
-            </span>
+            <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
+              <span v-text="myGoal">
+              </span>
             </b-button>
             <b-button @click.prevent="showModal(rowKey, colKey)" v-else class="my-sub-goal"><span v-text="myGoal">
             </span>
@@ -102,15 +103,9 @@ import Input from '../components/Input.vue';
 })
 export default class MandaraView extends Vue {
 
-  myGoals: object = {
-    row1: {
-      col1: '',
-      col2: '',
-      col3: '',
-    },
-  };
+  myGoals: object = {};
 
-  private mandaraLevel: number = 1;
+  private mandaraLevel: number = 2;
 
   private goal: string = '';
 
@@ -122,13 +117,13 @@ export default class MandaraView extends Vue {
   };
 
   created() {
-    // for (let i = 1; i <= this.boxSideLength; i += 1) {
-    //   this.myGoals[`row${i}`] = {};
-    //   for (let j = 1; j <= this.boxSideLength; j += 1) {
-    //     this.myGoals[`row${i}`][`col${j}`] = '';
-    //   }
-    // }
-    console.log('created');
+    for (let i = 1; i <= this.boxSideLength; i += 1) {
+      this.myGoals[`row${i}`] = {};
+      for (let j = 1; j <= this.boxSideLength; j += 1) {
+        this.myGoals[`row${i}`][`col${j}`] = '';
+      }
+    }
+    console.log('created', this.myGoals);
   }
 
   get
@@ -147,8 +142,16 @@ export default class MandaraView extends Vue {
     this.clickedRowCol.col = colKey;
   }
 
-  isMainGoal(rowIdx: number, colIdx: number): boolean {
+  isRootGoal(rowIdx: number, colIdx: number): boolean {
     return rowIdx === Math.floor(this.boxSideLength / 2) && colIdx === Math.floor(this.boxSideLength / 2);
+  }
+
+  isMainGoal(rowIdx: number, colIdx: number): boolean {
+    return rowIdx % 3 === 1 && colIdx % 3 === 1;
+  }
+
+  isInputParentGoal(rowIdx: number, colIdx: number): boolean {
+    // TODO : mainGoal의 부모가 되는 subView가 입력 되었는가를 판단하여 true,false 반환
   }
 
   checkFormValidity(): boolean {
@@ -199,8 +202,25 @@ export default class MandaraView extends Vue {
 </script>
 
 <style lang="scss" scoped>
+  @mixin my-goal() {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
   .border {
     border: 1px solid #333333;
+  }
+
+  .column {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -webkit-box-flex: 1;
   }
 
   .goal-wrapper {
@@ -223,11 +243,12 @@ export default class MandaraView extends Vue {
     }
   }
 
-  .my-main-goal,
+  .my-main-goal {
+    @include my-goal;
+    background-color: red;
+  }
+
   .my-sub-goal {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 0;
+    @include my-goal;
   }
 </style>
