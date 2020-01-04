@@ -7,7 +7,7 @@
             <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
               <span v-text="myGoal" />
             </b-button>
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-else-if="isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
+            <b-button @click.prevent="showModal(rowKey, colKey)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
               <span v-text="myGoal" />
             </b-button>
           </div>
@@ -216,9 +216,7 @@ export default class MandaraView extends Vue {
       relativeColIdx = colIdx - 1;
     }
 
-    // console.log(`rowIdx : ${rowIdx}, colIdx : ${colIdx}, mainGoalrowIdx : ${relativeRowIdx},  mainGoalcolIdx : ${relativeColIdx}`);
-    console.log('length', this.myGoals[`row${relativeRowIdx}`][`col${relativeColIdx}`].length);
-    if (this.myGoals[`row${relativeRowIdx}`][`col${relativeColIdx}`].length > 0) {
+    if (this.myGoals[`row${relativeRowIdx + 1}`][`col${relativeColIdx + 1}`].length > 0) {
       return true;
     }
     return false;
