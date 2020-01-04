@@ -5,11 +5,10 @@
         <div class="column border p-0" v-for="(myGoal,colKey,colIdx) in row" :key="colIdx">
           <div class="goal-wrapper" :class="[false ? ['animation',] : ['',]]">
             <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
-              <span v-text="myGoal">
-              </span>
+              <span v-text="myGoal" />
             </b-button>
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-else class="my-sub-goal"><span v-text="myGoal">
-            </span>
+            <b-button @click.prevent="showModal(rowKey, colKey)" v-else-if="isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
+              <span v-text="myGoal" />
             </b-button>
           </div>
 <!--        <MandaraBox v-for="(col) in row" :key="col" :mandaraIdx="col"/>-->
@@ -136,12 +135,6 @@ export default class MandaraView extends Vue {
     return 3 ** this.mandaraLevel;
   }
 
-  showModal(rowKey: string, colKey: string): void {
-    this.$bvModal.show('input-goal-modal');
-    this.clickedRowCol.row = rowKey;
-    this.clickedRowCol.col = colKey;
-  }
-
   isRootGoal(rowIdx: number, colIdx: number): boolean {
     return rowIdx === Math.floor(this.boxSideLength / 2) && colIdx === Math.floor(this.boxSideLength / 2);
   }
@@ -151,13 +144,90 @@ export default class MandaraView extends Vue {
   }
 
   isInputParentGoal(rowIdx: number, colIdx: number): boolean {
+    // 이거 발동될때는 메인골인 좌표일때
     // TODO : mainGoal의 부모가 되는 subView가 입력 되었는가를 판단하여 true,false 반환
+    if (this.mandaraLevel < 2) {
+      return false;
+    }
+    /*
+    let distance = 1 + (3**(this.mandaraLevel-1))*(i-1) = 1or4or7
+    ((rowIdx - 1)/3**(this.mandaraLevel-1)) + 1 = i
+     */
+
+    const parentGoalRowIdx = 1 + (rowIdx - 1)/3**(this.mandaraLevel - 1);
+    const parentGoalColIdx = 1 + (colIdx - 1)/3**(this.mandaraLevel - 1);
+
+    let mainGoalRowIdx = Math.floor(this.boxSideLength / 2);
+    let mainGoalColIdx = Math.floor(this.boxSideLength / 2);
+
+    if (parentGoalRowIdx === 1) {
+      mainGoalRowIdx -= 1;
+    } else if (parentGoalRowIdx === 2) {
+
+    } else if (parentGoalRowIdx === 3) {
+      mainGoalRowIdx += 1;
+    }
+
+    if (parentGoalColIdx === 1) {
+      mainGoalColIdx -= 1;
+    } else if (parentGoalColIdx === 2) {
+
+    } else if (parentGoalColIdx === 3) {
+      mainGoalColIdx += 1;
+    }
+
+    if (this.myGoals[`row${mainGoalRowIdx + 1}`][`col${mainGoalColIdx + 1}`].length > 0) {
+      return true;
+    }
+    return false;
+
+    /*
+    this.myGoals[][]
+    1,1 -> 3,3
+    1,4 -> 3,4
+    1,7 -> 3,5
+    4,1 -> 4,3
+    4,7 -> 4,5
+    7,1 -> 5,3
+    7,4 -> 5,4
+    7,7 -> 5,5
+    */
   }
 
-  checkFormValidity(): boolean {
-    const valid = this.$refs.form.checkValidity();
-    this.nameState = valid;
-    return valid;
+  isInputMainGoal(rowIdx: number, colIdx: number): boolean {
+    let relativeRowIdx = rowIdx % 3 + 1;
+    let relativeColIdx = colIdx % 3 + 1;
+
+    // console.log(`rowIdx : ${relativeRowIdx},  colIdx : ${relativeColIdx}`);
+
+    if (relativeRowIdx === 1) {
+      relativeRowIdx = rowIdx + 1;
+    } else if (relativeRowIdx === 2) {
+      relativeRowIdx = rowIdx;
+    } else if (relativeRowIdx === 3) {
+      relativeRowIdx = rowIdx - 1;
+    }
+
+    if (relativeColIdx === 1) {
+      relativeColIdx = colIdx + 1;
+    } else if (relativeColIdx === 2) {
+      relativeColIdx = colIdx;
+    } else if (relativeColIdx === 3) {
+      relativeColIdx = colIdx - 1;
+    }
+
+    // console.log(`rowIdx : ${rowIdx}, colIdx : ${colIdx}, mainGoalrowIdx : ${relativeRowIdx},  mainGoalcolIdx : ${relativeColIdx}`);
+    console.log('length', this.myGoals[`row${relativeRowIdx}`][`col${relativeColIdx}`].length);
+    if (this.myGoals[`row${relativeRowIdx}`][`col${relativeColIdx}`].length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  showModal(rowKey: string, colKey: string): void {
+    this.$bvModal.show('input-goal-modal');
+    this.clickedRowCol.row = rowKey;
+    this.clickedRowCol.col = colKey;
   }
 
   onShowModal(): void {
@@ -173,6 +243,13 @@ export default class MandaraView extends Vue {
   resetModal(): void {
     this.goal = '';
     this.nameState = null;
+  }
+
+
+  checkFormValidity(): boolean {
+    const valid = this.$refs.form.checkValidity();
+    this.nameState = valid;
+    return valid;
   }
 
   handleOk(): void {
