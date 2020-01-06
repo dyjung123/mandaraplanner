@@ -246,23 +246,27 @@ export default class MandaraView extends Vue {
   }
 
   .animation-enter, .animation-leave-to {
-    transform: scale(1.5);
+    transform: scale(0.5);
     opacity: 0;
   }
 
   .my-main-goal {
     @include my-goal;
-    background-color: #4b9e48;
+    background-color: #ffffff;
+    color: #333333;
     &:focus, &:hover {
-      background-color: #458a45;
+      background-color: #e5e5e5;
+      color: #333333;
     }
   }
 
   .my-sub-goal {
     @include my-goal;
-    background-color: #c1d517;
+    background-color: #333333;
+    color: #ffffff;
     &:focus, &:hover {
-      background-color: #a5b917;
+      background-color: #272727;
+      color: #ffffff;
     }
   }
 
