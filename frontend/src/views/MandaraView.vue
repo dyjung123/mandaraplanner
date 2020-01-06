@@ -1,88 +1,45 @@
 <template>
-  <div class="mandara">
-    <div class="container">
-      <div class="row" v-for="(row,rowKey,rowIdx) in myGoals" :key="rowIdx">
-        <div class="column border p-0" v-for="(myGoal,colKey,colIdx) in row" :key="colIdx">
-          <div class="goal-wrapper" :class="[false ? ['animation',] : ['',]]">
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
-              <span v-text="myGoal" />
+  <div class="container min-width-768 pt-5">
+    <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
+      <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
+        <div class="goal-wrapper">
+          <transition name="animation">
+            <b-button @click.prevent="showModal(rowIdx, colIdx)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
+              <span class="goal-txt" v-text="myGoal" />
             </b-button>
-            <b-button @click.prevent="showModal(rowKey, colKey)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
-              <span v-text="myGoal" />
+            <b-button @click.prevent="showModal(rowIdx, colIdx)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
+              <span class="goal-txt" v-text="myGoal" />
             </b-button>
-          </div>
-<!--        <MandaraBox v-for="(col) in row" :key="col" :mandaraIdx="col"/>-->
-<!--        <div class="mandara-box">-->
-<!--          <div class="container">-->
-<!--            <div class="row" v-for="(row, rowKey, rowIdx) in myGoals" :key="rowIdx">-->
-<!--              <div class="col-sm border p-0" v-for="(myGoal, colKey, colIdx) in row" :key="colIdx">-->
-<!--                <div class="goal-wrapper" :class="[isWriteMainGoal ? ['animation',] : ['',]]">-->
-<!--                  <b-button @click.prevent="showModal(rowKey, colKey)" v-if="isOkShow && isMainGoal(rowIdx, colIdx)" class="my-main-goal"><span v-text="myGoal">-->
-<!--            </span>-->
-<!--                  </b-button>-->
-<!--                  <b-button @click.prevent="showModal(rowKey, colKey)" v-else-if="isWriteMainGoal" class="my-sub-goal"><span v-text="myGoal">-->
-<!--            </span>-->
-<!--                  </b-button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <b-modal-->
-<!--            :id="`input-modal-${mandaraIdx}`"-->
-<!--            ref="modal"-->
-<!--            title="Submit Your Goal"-->
-<!--            @show="onShowModal"-->
-<!--            @hidden="onHideModal"-->
-<!--            @ok.prevent="handleOk"-->
-<!--            no-stacking-->
-<!--          >-->
-<!--            &lt;!&ndash;      <form ref="form" @submit.stop.prevent="handleSubmit">&ndash;&gt;-->
-<!--            <form ref="form">-->
-<!--              <b-form-group-->
-<!--                :state="nameState"-->
-<!--                label="Goal"-->
-<!--                label-for="goal-input"-->
-<!--                invalid-feedback="Goal is required"-->
-<!--              >-->
-<!--                <b-form-input-->
-<!--                  id="goal-input"-->
-<!--                  v-model="goal"-->
-<!--                  :state="nameState"-->
-<!--                  required-->
-<!--                ></b-form-input>-->
-<!--              </b-form-group>-->
-<!--            </form>-->
-<!--          </b-modal>-->
+          </transition>
         </div>
-        <!-- branch box인가 아닌가를 MandaraBox -->
       </div>
-      <b-modal
-        :id="`input-goal-modal`"
-        ref="modal"
-        title="Submit Your Goal"
-        @show="onShowModal"
-        @hidden="onHideModal"
-        @ok.prevent="handleOk"
-        no-stacking
-      >
-        <!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
-        <form ref="form">
-          <b-form-group
-            :state="nameState"
-            label="Goal"
-            label-for="goal-input"
-            invalid-feedback="Goal is required"
-          >
-            <b-form-input
-              id="goal-input"
-              v-model="goal"
-              :state="nameState"
-              required
-            ></b-form-input>
-          </b-form-group>
-        </form>
-      </b-modal>
     </div>
-<!--    <Input />-->
+    <b-modal
+      :id="`input-goal-modal`"
+      ref="modal"
+      title="Submit Your Goal"
+      @show="onShowModal"
+      @hidden="onHideModal"
+      @ok.prevent="handleOk"
+      no-stacking
+    >
+      <!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
+      <form ref="form" @submit.stop.prevent="handleSubmit">
+        <b-form-group
+          :state="nameState"
+          label="Goal"
+          label-for="goal-input"
+          invalid-feedback="Goal is required"
+        >
+          <b-form-input
+            id="goal-input"
+            v-model="goal"
+            :state="nameState"
+            required
+          ></b-form-input>
+        </b-form-group>
+      </form>
+    </b-modal>
   </div>
 </template>
 
@@ -91,15 +48,8 @@ import {
   Vue,
   Component,
 } from 'vue-property-decorator';
-import MandaraBox from '../components/MandaraBox.vue';
-import Input from '../components/Input.vue';
 
-@Component({
-  components: {
-    MandaraBox,
-    Input,
-  },
-})
+@Component
 export default class MandaraView extends Vue {
 
   myGoals: object = {};
@@ -116,19 +66,24 @@ export default class MandaraView extends Vue {
   };
 
   created() {
-    for (let i = 1; i <= this.boxSideLength; i += 1) {
-      this.myGoals[`row${i}`] = {};
-      for (let j = 1; j <= this.boxSideLength; j += 1) {
-        this.myGoals[`row${i}`][`col${j}`] = '';
+    const storedMandaraPlanner: object | null = JSON.parse(localStorage.getItem('mandala_planner'));
+
+    if (storedMandaraPlanner) {
+      this.myGoals = storedMandaraPlanner;
+    } else {
+      for (let i = 1; i <= this.boxSideLength; i += 1) {
+        this.myGoals[`row${i}`] = {};
+        for (let j = 1; j <= this.boxSideLength; j += 1) {
+          this.myGoals[`row${i}`][`col${j}`] = '';
+        }
       }
     }
-    console.log('created', this.myGoals);
   }
 
-  get
-  sumGoalBox(): number {
-    return 9 ** this.mandaraLevel;
-  }
+  // get
+  // sumGoalBox(): number {
+  //   return 9 ** this.mandaraLevel;
+  // }
 
   get
   boxSideLength(): number {
@@ -143,16 +98,11 @@ export default class MandaraView extends Vue {
     return rowIdx % 3 === 1 && colIdx % 3 === 1;
   }
 
+  // 이 메서드가 발동될때는 메인골인 좌표일때
   isInputParentGoal(rowIdx: number, colIdx: number): boolean {
-    // 이거 발동될때는 메인골인 좌표일때
-    // TODO : mainGoal의 부모가 되는 subView가 입력 되었는가를 판단하여 true,false 반환
     if (this.mandaraLevel < 2) {
       return false;
     }
-    /*
-    let distance = 1 + (3**(this.mandaraLevel-1))*(i-1) = 1or4or7
-    ((rowIdx - 1)/3**(this.mandaraLevel-1)) + 1 = i
-     */
 
     const parentGoalRowIdx = 1 + (rowIdx - 1)/3**(this.mandaraLevel - 1);
     const parentGoalColIdx = 1 + (colIdx - 1)/3**(this.mandaraLevel - 1);
@@ -177,28 +127,15 @@ export default class MandaraView extends Vue {
     }
 
     if (this.myGoals[`row${mainGoalRowIdx + 1}`][`col${mainGoalColIdx + 1}`].length > 0) {
+      this.myGoals[`row${rowIdx + 1}`][`col${colIdx + 1}`] = this.myGoals[`row${mainGoalRowIdx + 1}`][`col${mainGoalColIdx + 1}`];
       return true;
     }
     return false;
-
-    /*
-    this.myGoals[][]
-    1,1 -> 3,3
-    1,4 -> 3,4
-    1,7 -> 3,5
-    4,1 -> 4,3
-    4,7 -> 4,5
-    7,1 -> 5,3
-    7,4 -> 5,4
-    7,7 -> 5,5
-    */
   }
 
   isInputMainGoal(rowIdx: number, colIdx: number): boolean {
     let relativeRowIdx = rowIdx % 3 + 1;
     let relativeColIdx = colIdx % 3 + 1;
-
-    // console.log(`rowIdx : ${relativeRowIdx},  colIdx : ${relativeColIdx}`);
 
     if (relativeRowIdx === 1) {
       relativeRowIdx = rowIdx + 1;
@@ -222,10 +159,10 @@ export default class MandaraView extends Vue {
     return false;
   }
 
-  showModal(rowKey: string, colKey: string): void {
+  showModal(rowKey: number, colKey: number): void {
     this.$bvModal.show('input-goal-modal');
-    this.clickedRowCol.row = rowKey;
-    this.clickedRowCol.col = colKey;
+    this.clickedRowCol.row = rowKey + 1;
+    this.clickedRowCol.col = colKey + 1;
   }
 
   onShowModal(): void {
@@ -259,15 +196,8 @@ export default class MandaraView extends Vue {
       return;
     }
 
-    this.myGoals[`${this.clickedRowCol.row}`][`${this.clickedRowCol.col}`] = this.goal;
-    // this.isWriteMainGoal = true;
-    // if (this.clickedRowCol.row === 'row2' && this.clickedRowCol.col === 'col2') {
-    //   this.existRootGoal();
-    // } else {
-    //
-    // }
-
-    // TODO : 만약 제출한게 mainGoal이면 isWriteMainGoal=true
+    this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`] = this.goal;
+    localStorage.setItem('mandala_planner', JSON.stringify(this.myGoals));
 
     this.$nextTick(() => {
       this.$refs.modal.hide();
@@ -282,10 +212,11 @@ export default class MandaraView extends Vue {
     height: 100%;
     box-sizing: border-box;
     padding: 0;
+    border: 1px solid #b4b4b3;
   }
 
-  .border {
-    border: 1px solid #333333;
+  .min-width-768 {
+    min-width: 768px;
   }
 
   .column {
@@ -299,31 +230,44 @@ export default class MandaraView extends Vue {
   }
 
   .goal-wrapper {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
   }
 
-  .animation {
-    animation: rrotate_ani linear 1s both;
-    -webkit-animation: rrotate_ani linear 1s both;
+  .animation-enter-active, .animation-leave-active {
+    transition: all .5s;
   }
 
-  @keyframes rrotate_ani {
-    0% {
-      transform: rotateY(0);
-    }
-
-    100% {
-      transform: rotateY(360deg);
-    }
+  .animation-enter, .animation-leave-to {
+    transform: scale(0.5);
+    opacity: 0;
   }
 
   .my-main-goal {
     @include my-goal;
-    background-color: red;
+    background-color: #ffffff;
+    color: #333333;
+    &:focus, &:hover {
+      background-color: #e5e5e5;
+      color: #333333;
+    }
   }
 
   .my-sub-goal {
     @include my-goal;
+    background-color: #333333;
+    color: #ffffff;
+    &:focus, &:hover {
+      background-color: #272727;
+      color: #ffffff;
+    }
+  }
+
+  .goal-txt {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    word-break: break-all;
   }
 </style>
