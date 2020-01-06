@@ -3,12 +3,14 @@
     <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
       <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
         <div class="goal-wrapper">
-          <b-button @click.prevent="showModal(rowIdx, colIdx)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
-            <span class="goal-txt" v-text="myGoal" />
-          </b-button>
-          <b-button @click.prevent="showModal(rowIdx, colIdx)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
-            <span class="goal-txt" v-text="myGoal" />
-          </b-button>
+          <transition name="animation">
+            <b-button @click.prevent="showModal(rowIdx, colIdx)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
+              <span class="goal-txt" v-text="myGoal" />
+            </b-button>
+            <b-button @click.prevent="showModal(rowIdx, colIdx)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
+              <span class="goal-txt" v-text="myGoal" />
+            </b-button>
+          </transition>
         </div>
       </div>
     </div>
@@ -71,19 +73,24 @@ export default class MandaraView extends Vue {
   };
 
   created() {
-    for (let i = 1; i <= this.boxSideLength; i += 1) {
-      this.myGoals[`row${i}`] = {};
-      for (let j = 1; j <= this.boxSideLength; j += 1) {
-        this.myGoals[`row${i}`][`col${j}`] = '';
+    const storedMandaraPlanner: object | null = JSON.parse(localStorage.getItem('mandala_planner'));
+
+    if (storedMandaraPlanner) {
+      this.myGoals = storedMandaraPlanner;
+    } else {
+      for (let i = 1; i <= this.boxSideLength; i += 1) {
+        this.myGoals[`row${i}`] = {};
+        for (let j = 1; j <= this.boxSideLength; j += 1) {
+          this.myGoals[`row${i}`][`col${j}`] = '';
+        }
       }
     }
-    console.log('created', this.myGoals);
   }
 
-  get
-  sumGoalBox(): number {
-    return 9 ** this.mandaraLevel;
-  }
+  // get
+  // sumGoalBox(): number {
+  //   return 9 ** this.mandaraLevel;
+  // }
 
   get
   boxSideLength(): number {
@@ -98,16 +105,11 @@ export default class MandaraView extends Vue {
     return rowIdx % 3 === 1 && colIdx % 3 === 1;
   }
 
+  // 이 메서드가 발동될때는 메인골인 좌표일때
   isInputParentGoal(rowIdx: number, colIdx: number): boolean {
-    // 이거 발동될때는 메인골인 좌표일때
-    // TODO : mainGoal의 부모가 되는 subView가 입력 되었는가를 판단하여 true,false 반환
     if (this.mandaraLevel < 2) {
       return false;
     }
-    /*
-    let distance = 1 + (3**(this.mandaraLevel-1))*(i-1) = 1or4or7
-    ((rowIdx - 1)/3**(this.mandaraLevel-1)) + 1 = i
-     */
 
     const parentGoalRowIdx = 1 + (rowIdx - 1)/3**(this.mandaraLevel - 1);
     const parentGoalColIdx = 1 + (colIdx - 1)/3**(this.mandaraLevel - 1);
@@ -141,8 +143,6 @@ export default class MandaraView extends Vue {
   isInputMainGoal(rowIdx: number, colIdx: number): boolean {
     let relativeRowIdx = rowIdx % 3 + 1;
     let relativeColIdx = colIdx % 3 + 1;
-
-    // console.log(`rowIdx : ${relativeRowIdx},  colIdx : ${relativeColIdx}`);
 
     if (relativeRowIdx === 1) {
       relativeRowIdx = rowIdx + 1;
@@ -204,8 +204,7 @@ export default class MandaraView extends Vue {
     }
 
     this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`] = this.goal;
-
-    // TODO : 만약 제출한게 mainGoal이면 isWriteMainGoal=true
+    localStorage.setItem('mandala_planner', JSON.stringify(this.myGoals));
 
     this.$nextTick(() => {
       this.$refs.modal.hide();
@@ -242,40 +241,13 @@ export default class MandaraView extends Vue {
     height: 50px;
   }
 
-  .animation {
-    animation: onabox linear 2s both;
-    -webkit-animation: onabox linear 2s both;
+  .animation-enter-active, .animation-leave-active {
+    transition: all .5s;
   }
 
-  @keyframes rrotate_ani {
-    0% {
-      transform: rotateY(0);
-    }
-
-    100% {
-      transform: rotateY(360deg);
-    }
-  }
-
-  @keyframes onoabox {
-    0% {
-      transform: scale(1.0);
-      opacity: 0;
-    }
-
-    30% {
-      transform: scale(1.5);
-    }
-
-    40% {
-      transform: scale(1.0);
-      opacity: 1;
-    }
-
-    100% {
-      transform: scale(1.0);
-      opacity: 0;
-    }
+  .animation-enter, .animation-leave-to {
+    transform: scale(1.5);
+    opacity: 0;
   }
 
   .my-main-goal {
