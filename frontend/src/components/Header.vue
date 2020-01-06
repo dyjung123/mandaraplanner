@@ -23,6 +23,7 @@ export default class Header extends Vue {
     width: 100%;
     margin: 0;
     padding: 0;
+    border-bottom: 1px solid #b6b6b6;
   }
 
   .header__title-wrapper {

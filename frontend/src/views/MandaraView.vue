@@ -1,5 +1,5 @@
 <template>
-  <div class="container min-width-768">
+  <div class="container min-width-768 pt-5">
     <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
       <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
         <div class="goal-wrapper">
@@ -48,15 +48,8 @@ import {
   Vue,
   Component,
 } from 'vue-property-decorator';
-import MandaraBox from '../components/MandaraBox.vue';
-import Input from '../components/Input.vue';
 
-@Component({
-  components: {
-    MandaraBox,
-    Input,
-  },
-})
+@Component
 export default class MandaraView extends Vue {
 
   myGoals: object = {};
@@ -237,8 +230,8 @@ export default class MandaraView extends Vue {
   }
 
   .goal-wrapper {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
   }
 
   .animation-enter-active, .animation-leave-active {
