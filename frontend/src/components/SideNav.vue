@@ -36,39 +36,14 @@ import {
 @Component
 export default class SideNav extends Vue {
   private categoryInfo: object = {
-    음식: {
-      primaryCategory: '음식',
-      subCategory: ['중식', '한식', '양식', '일식'],
+    로컬스토리지: {
+      primaryCategory: '로컬스토리지',
+      subCategory: ['비우기', '저장하기', '끄기', '사용하기'],
       isOn: false,
     },
-    '미술&사진': {
-      primaryCategory: '미술&사진',
-      subCategory: ['그림', '사진'],
-      isOn: false,
-    },
-    아동: {
-      primaryCategory: '아동',
-      subCategory: ['동화', '그림책', '퍼즐'],
-      isOn: false,
-    },
-    역사: {
-      primaryCategory: '역사',
-      subCategory: ['세계사', '국사'],
-      isOn: false,
-    },
-    법: {
-      primaryCategory: '법',
-      subCategory: ['형법', '민법', '로스쿨', '실생활'],
-      isOn: false,
-    },
-    '10대': {
-      primaryCategory: '10대',
-      subCategory: ['교과서', '만화', '대학입시', '라이트노벨'],
-      isOn: false,
-    },
-    문학: {
-      primaryCategory: '문학',
-      subCategory: ['시', '소설', '수필', '희곡', '평론'],
+    기능2: {
+      primaryCategory: '기능2',
+      subCategory: ['서브1', '서브2', '서브3', '서브4'],
       isOn: false,
     },
   };
