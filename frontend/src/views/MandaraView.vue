@@ -23,7 +23,6 @@
       @ok.prevent="handleOk"
       no-stacking
     >
-      <!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group
           :state="nameState"
