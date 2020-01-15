@@ -215,6 +215,15 @@ export default class MandaraView extends Vue {
     border: 1px solid #b4b4b3;
   }
 
+  @mixin txt-len-limit {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+  }
+
   .min-width-768 {
     min-width: 768px;
   }
@@ -268,6 +277,6 @@ export default class MandaraView extends Vue {
     padding: 0;
     margin: 0;
     text-align: center;
-    word-break: break-all;
+    @include txt-len-limit;
   }
 </style>
