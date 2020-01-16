@@ -53,6 +53,50 @@ export default class MandaraView extends Vue {
 
   myGoals: object = {};
 
+  private myGoalsTree: object = {
+    level1: {
+      goal: '',
+      level2: {
+        goal1: {
+          txt: '',
+          level3: {},
+        },
+        goal2: {
+          txt: '',
+          level3: {},
+        },
+        goal3: {
+          txt: '',
+          level3: {},
+        },
+        goal4: {
+          txt: '',
+          level3: {},
+        },
+        goal5: {
+          txt: '',
+          level3: {},
+        },
+        goal6: {
+          txt: '',
+          level3: {},
+        },
+        goal7: {
+          txt: '',
+          level3: {},
+        },
+        goal8: {
+          txt: '',
+          level3: {},
+        },
+        goal9: {
+          txt: '',
+          level3: {},
+        },
+      },
+    },
+  };
+
   private mandaraLevel: number = 2;
 
   private goal: string = '';
@@ -276,6 +320,8 @@ export default class MandaraView extends Vue {
     padding: 0;
     margin: 0;
     text-align: center;
+    font-size: 14px;
+    letter-spacing: -1px;
     @include txt-len-limit;
   }
 </style>
