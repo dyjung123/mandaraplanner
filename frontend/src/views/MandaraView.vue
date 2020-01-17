@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SideNav :my-goals-data="myGoals" />
+    <SideNav :my-goals-data="myGoals" ref="sideNav" />
     <div class="container min-width-768 pt-5">
       <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
         <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
@@ -232,7 +232,7 @@ export default class MandaraView extends Vue {
     }
 
     this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal = this.goal;
-    localStorage.setItem('mandala_planner', JSON.stringify(this.myGoals));
+    this.$refs.sideNav.autoSaveLocalStorage();
 
     this.$nextTick(() => {
       this.$refs.modal.hide();

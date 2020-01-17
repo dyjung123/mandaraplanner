@@ -37,7 +37,7 @@ import {
 @Component
 export default class SideNav extends Vue {
   @Prop(Object)
-  readonly myGoalsData: object | undefined;
+  readonly myGoalsData!: object;
 
   private isOnLocalStorage: boolean = true;
 
@@ -59,14 +59,30 @@ export default class SideNav extends Vue {
       if (clickedSubCat === '비우기') {
         localStorage.clear();
       } else if (clickedSubCat === '저장하기') {
-        localStorage.setItem('mandala_planner', JSON.stringify(this.myGoalsData));
+        this.saveLocalStorage(this.myGoalsData);
       } else if (clickedSubCat === '끄기') {
         this.isOnLocalStorage = false;
+        console.log(this.isOnLocalStorage);
       } else if (clickedSubCat === '사용하기') {
         this.isOnLocalStorage = true;
+        console.log(this.isOnLocalStorage);
       }
     } else if (clickedPriCat === '기능2') {
       console.log('기능2');
+    }
+  }
+
+  saveLocalStorage(data: object): void {
+    localStorage.setItem('mandala_planner', JSON.stringify(data));
+  }
+
+  autoSaveLocalStorage(isOnLocalStorage: boolean, data: object): void {
+    if (isOnLocalStorage === undefined || data === undefined) {
+      if (this.isOnLocalStorage) {
+        this.saveLocalStorage(this.myGoalsData);
+      }
+    } else if (isOnLocalStorage) {
+      this.saveLocalStorage(data);
     }
   }
 }
