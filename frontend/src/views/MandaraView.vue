@@ -1,4 +1,6 @@
 <template>
+  <div>
+    <SideNav :my-goals-data="myGoals" />
   <div class="container min-width-768 pt-5">
     <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
       <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
@@ -34,11 +36,21 @@
             id="goal-input"
             v-model="goal"
             :state="nameState"
-            required
-          ></b-form-input>
-        </b-form-group>
-      </form>
-    </b-modal>
+            label="Goal"
+            label-for="goal-input"
+            invalid-feedback="Goal is required"
+          >
+            <b-form-input
+              id="goal-input"
+              v-model="goal"
+              :state="nameState"
+              required
+            ></b-form-input>
+          </b-form-group>
+        </form>
+      </b-modal>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -47,8 +59,13 @@ import {
   Vue,
   Component,
 } from 'vue-property-decorator';
+import SideNav from '../components/SideNav.vue';
 
-@Component
+@Component({
+  components: {
+    SideNav,
+  },
+})
 export default class MandaraView extends Vue {
 
   myGoals: object = {};

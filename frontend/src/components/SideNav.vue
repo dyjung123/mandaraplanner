@@ -13,7 +13,7 @@
                 <div v-if="subCatList['isOn']" class="pb-2">
                   <ul class="list-unstyled m-0 p-0">
                     <li class="nav__sub-cat-li" v-for="(subCat,subCatIdx) in subCatList['subCategory']" :key="subCatIdx">
-                      <a class="nav__sub-cat-wrap" tabindex="0">
+                      <a class="nav__sub-cat-wrap" tabindex="0" @click.prevent="clickedSubCat(subCat, subCatList['primaryCat'])">
                         <span class="nav__sub-cat-txt" v-text="subCat" />
                       </a>
                     </li>
@@ -31,22 +31,44 @@
 import {
   Vue,
   Component,
+  Prop,
 } from 'vue-property-decorator';
 
 @Component
 export default class SideNav extends Vue {
+  @Prop(Object)
+  readonly myGoalsData: object | undefined;
+
+  private isOnLocalStorage: boolean = true;
+
   private categoryInfo: object = {
     로컬스토리지: {
-      primaryCategory: '로컬스토리지',
+      primaryCat: '로컬스토리지',
       subCategory: ['비우기', '저장하기', '끄기', '사용하기'],
       isOn: false,
     },
     기능2: {
-      primaryCategory: '기능2',
+      primaryCat: '기능2',
       subCategory: ['서브1', '서브2', '서브3', '서브4'],
       isOn: false,
     },
   };
+
+  clickedSubCat(clickedSubCat: string, clickedPriCat: string): void {
+    if (clickedPriCat === '로컬스토리지') {
+      if (clickedSubCat === '비우기') {
+        localStorage.clear();
+      } else if (clickedSubCat === '저장하기') {
+        localStorage.setItem('mandala_planner', JSON.stringify(this.myGoalsData));
+      } else if (clickedSubCat === '끄기') {
+        this.isOnLocalStorage = false;
+      } else if (clickedSubCat === '사용하기') {
+        this.isOnLocalStorage = true;
+      }
+    } else if (clickedPriCat === '기능2') {
+      console.log('기능2');
+    }
+  }
 }
 </script>
 
