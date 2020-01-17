@@ -1,45 +1,48 @@
 <template>
-  <div class="container min-width-768 pt-5">
-    <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
-      <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
-        <div class="goal-wrapper">
-          <transition name="animation">
-            <b-button @click.prevent="showModal(rowIdx, colIdx)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
-              <span class="goal-txt" v-text="myGoal" />
-            </b-button>
-            <b-button @click.prevent="showModal(rowIdx, colIdx)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
-              <span class="goal-txt" v-text="myGoal" />
-            </b-button>
-          </transition>
+  <div>
+    <SideNav />
+    <div class="container min-width-768 pt-5">
+      <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
+        <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
+          <div class="goal-wrapper">
+            <transition name="animation">
+              <b-button @click.prevent="showModal(rowIdx, colIdx)" v-if="isRootGoal(rowIdx, colIdx) || isMainGoal(rowIdx, colIdx) && isInputParentGoal(rowIdx, colIdx)" class="my-main-goal">
+                <span class="goal-txt" v-text="myGoal" />
+              </b-button>
+              <b-button @click.prevent="showModal(rowIdx, colIdx)" v-else-if="!isMainGoal(rowIdx, colIdx) && isInputMainGoal(rowIdx, colIdx)" class="my-sub-goal">
+                <span class="goal-txt" v-text="myGoal" />
+              </b-button>
+            </transition>
+          </div>
         </div>
       </div>
-    </div>
-    <b-modal
-      :id="`input-goal-modal`"
-      ref="modal"
-      title="Submit Your Goal"
-      @show="onShowModal"
-      @hidden="onHideModal"
-      @ok.prevent="handleOk"
-      no-stacking
-    >
-      <!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group
-          :state="nameState"
-          label="Goal"
-          label-for="goal-input"
-          invalid-feedback="Goal is required"
-        >
-          <b-form-input
-            id="goal-input"
-            v-model="goal"
+      <b-modal
+        :id="`input-goal-modal`"
+        ref="modal"
+        title="Submit Your Goal"
+        @show="onShowModal"
+        @hidden="onHideModal"
+        @ok.prevent="handleOk"
+        no-stacking
+      >
+        <!--      <form ref="form" @submit.stop.prevent="handleSubmit">-->
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group
             :state="nameState"
-            required
-          ></b-form-input>
-        </b-form-group>
-      </form>
-    </b-modal>
+            label="Goal"
+            label-for="goal-input"
+            invalid-feedback="Goal is required"
+          >
+            <b-form-input
+              id="goal-input"
+              v-model="goal"
+              :state="nameState"
+              required
+            ></b-form-input>
+          </b-form-group>
+        </form>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -48,8 +51,13 @@ import {
   Vue,
   Component,
 } from 'vue-property-decorator';
+import SideNav from '../components/SideNav.vue';
 
-@Component
+@Component({
+  components: {
+    SideNav,
+  },
+})
 export default class MandaraView extends Vue {
 
   myGoals: object = {};
