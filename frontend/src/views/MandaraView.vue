@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SideNav />
+    <SideNav :my-goals-data="myGoals" />
     <div class="container min-width-768 pt-5">
       <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
         <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">

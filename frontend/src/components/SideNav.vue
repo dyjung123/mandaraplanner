@@ -31,10 +31,16 @@
 import {
   Vue,
   Component,
+  Prop,
 } from 'vue-property-decorator';
 
 @Component
 export default class SideNav extends Vue {
+  @Prop(Object)
+  readonly myGoalsData: object | undefined;
+
+  private isOnLocalStorage: boolean = true;
+
   private categoryInfo: object = {
     로컬스토리지: {
       primaryCat: '로컬스토리지',
@@ -53,11 +59,11 @@ export default class SideNav extends Vue {
       if (clickedSubCat === '비우기') {
         localStorage.clear();
       } else if (clickedSubCat === '저장하기') {
-        console.log('저장하기');
+        localStorage.setItem('mandala_planner', JSON.stringify(this.myGoalsData));
       } else if (clickedSubCat === '끄기') {
-        console.log('끄기');
+        this.isOnLocalStorage = false;
       } else if (clickedSubCat === '사용하기') {
-        console.log('사용하기');
+        this.isOnLocalStorage = true;
       }
     } else if (clickedPriCat === '기능2') {
       console.log('기능2');
