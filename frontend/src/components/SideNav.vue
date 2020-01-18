@@ -52,6 +52,7 @@ import {
   Component,
   Prop,
 } from 'vue-property-decorator';
+import { Settings } from '../types/goals';
 
 @Component
 export default class SideNav extends Vue {
@@ -76,7 +77,7 @@ export default class SideNav extends Vue {
   private isOnSideNav: boolean = false;
 
   created() {
-    const settings: object | null = JSON.parse(localStorage.getItem('settings'));
+    const settings: Settings | null = JSON.parse(localStorage.getItem('settings')!);
 
     if (settings) {
       this.isOnLocalStorage = settings.isOnLocalStorage;
