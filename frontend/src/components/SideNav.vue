@@ -66,30 +66,38 @@ export default class SideNav extends Vue {
       subCategory: ['비우기', '저장하기', '끄기', '사용하기'],
       isOn: false,
     },
-    기능2: {
-      primaryCat: '기능2',
-      subCategory: ['서브1', '서브2', '서브3', '서브4'],
+    아무것도없음: {
+      primaryCat: '아무것도없음',
+      subCategory: ['장식1', '장식2', '장식3', '장식4'],
       isOn: false,
     },
   };
 
   private isOnSideNav: boolean = false;
 
+  created() {
+    const settings: object | null = JSON.parse(localStorage.getItem('settings'));
+
+    if (settings) {
+      this.isOnLocalStorage = settings.isOnLocalStorage;
+    }
+  }
+
   clickedSubCat(clickedSubCat: string, clickedPriCat: string): void {
     if (clickedPriCat === '로컬스토리지') {
       if (clickedSubCat === '비우기') {
-        localStorage.clear();
+        localStorage.removeItem('mandala_planner');
       } else if (clickedSubCat === '저장하기') {
         this.saveLocalStorage(this.myGoalsData);
       } else if (clickedSubCat === '끄기') {
         this.isOnLocalStorage = false;
-        console.log(this.isOnLocalStorage);
+        localStorage.setItem('settings', JSON.stringify({ isOnLocalStorage: this.isOnLocalStorage }));
       } else if (clickedSubCat === '사용하기') {
         this.isOnLocalStorage = true;
-        console.log(this.isOnLocalStorage);
+        localStorage.setItem('settings', JSON.stringify({ isOnLocalStorage: this.isOnLocalStorage }));
       }
-    } else if (clickedPriCat === '기능2') {
-      console.log('기능2');
+    } else if (clickedPriCat === '아무것도없음') {
+      console.log('아무것도없음');
     }
   }
 
