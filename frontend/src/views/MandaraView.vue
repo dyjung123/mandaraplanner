@@ -1,7 +1,7 @@
 <template>
   <div>
     <SideNav :my-goals-data="myGoals" ref="sideNav" />
-    <div class="container min-width-768 pt-5">
+    <div class="container min-width-768 py-5">
       <div class="row justify-content-center" v-for="(row,_,rowIdx) in myGoals" :key="rowIdx">
         <div class="column" v-for="(myGoal,_,colIdx) in row" :key="colIdx">
           <div class="goal-wrapper">
@@ -40,6 +40,17 @@
             />
           </b-form-group>
         </form>
+        <template v-slot:modal-footer="{ ok, cancel }">
+          <b-button size="sm" variant="primary" @click.prevent="ok()">
+            OK
+          </b-button>
+          <b-button size="sm" variant="danger" @click.prevent="clear()">
+            Clear
+          </b-button>
+          <b-button size="sm" variant="secondary" @click.prevent="cancel()">
+            Cancel
+          </b-button>
+        </template>
       </b-modal>
     </div>
   </div>
@@ -202,6 +213,9 @@ export default class MandaraView extends Vue {
 
   onShowModal(): void {
     this.resetModal();
+    this.$nextTick(() => {
+      this.goal = this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal;
+    });
   }
 
   onHideModal(): void {
@@ -232,6 +246,15 @@ export default class MandaraView extends Vue {
     }
 
     this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal = this.goal;
+    this.$refs.sideNav.autoSaveLocalStorage();
+
+    this.$nextTick(() => {
+      this.$refs.modal.hide();
+    });
+  }
+
+  clear(): void {
+    this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal = '';
     this.$refs.sideNav.autoSaveLocalStorage();
 
     this.$nextTick(() => {
