@@ -1,30 +1,49 @@
 <template>
-    <div class="nav">
-      <div class="nav__item-wrap">
-        <ul class="list-unstyled m-0 p-0" v-for="(subCatList,priCat,priCatIdx) in categoryInfo" :key="priCatIdx">
-          <li class="m-0 p-0 position-relative">
-            <div class="border-bottom">
-              <button class="nav__pri-cat" @click.prevent="subCatList['isOn'] = !subCatList['isOn']">
-                <span class="nav__pri-cat-txt" v-text="priCat" />
-              </button>
-            </div>
-            <div class="overflow-hidden">
-              <transition name="list-ani">
-                <div v-if="subCatList['isOn']" class="pb-2">
-                  <ul class="list-unstyled m-0 p-0">
-                    <li class="nav__sub-cat-li" v-for="(subCat,subCatIdx) in subCatList['subCategory']" :key="subCatIdx">
-                      <a class="nav__sub-cat-wrap" tabindex="0" @click.prevent="clickedSubCat(subCat, subCatList['primaryCat'])">
-                        <span class="nav__sub-cat-txt" v-text="subCat" />
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </transition>
-            </div>
-          </li>
-        </ul>
+  <div class="nav">
+    <transition name="fold-nav" mode="out-in" key="on">
+      <div class="nav__wrap--on" v-if="isOnSideNav">
+        <div class="nav__item-wrap">
+          <span class="nav__icon-row--rev">
+            <span class="nav__icon-wrap" @click.prevent="isOnSideNav = false">
+              <img class="nav__icon" src="../assets/close.svg" alt="close">
+            </span>
+          </span>
+          <ul class="list-unstyled m-0 p-0" v-for="(subCatList,priCat,priCatIdx) in categoryInfo" :key="priCatIdx">
+            <li class="m-0 p-0 position-relative">
+              <div class="border-bottom">
+                <button class="nav__pri-cat" @click.prevent="subCatList['isOn'] = !subCatList['isOn']">
+                  <span class="nav__pri-cat-txt" v-text="priCat" />
+                </button>
+              </div>
+              <div class="overflow-hidden">
+                <transition name="list-ani">
+                  <div v-if="subCatList['isOn']" class="pb-2">
+                    <ul class="list-unstyled m-0 p-0">
+                      <li class="nav__sub-cat-li" v-for="(subCat,subCatIdx) in subCatList['subCategory']" :key="subCatIdx">
+                        <a class="nav__sub-cat-wrap" tabindex="0" @click.prevent="clickedSubCat(subCat, subCatList['primaryCat'])">
+                          <span class="nav__sub-cat-txt" v-text="subCat" />
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </transition>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+      <div class="nav__wrap--off" v-else key="off">
+        <span class="nav__icon-row" @click.prevent="isOnSideNav = true">
+          <span class="nav__icon-wrap">
+            <img class="nav__icon" src="../assets/cheveron-right.svg" alt="cheveron_right_icon">
+          </span>
+          <span class="nav__icon-wrap">
+            <img class="nav__icon" src="../assets/menu.svg" alt="menu_icon">
+          </span>
+        </span>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script lang="ts">
@@ -53,6 +72,8 @@ export default class SideNav extends Vue {
       isOn: false,
     },
   };
+
+  private isOnSideNav: boolean = false;
 
   clickedSubCat(clickedSubCat: string, clickedPriCat: string): void {
     if (clickedPriCat === '로컬스토리지') {
@@ -95,11 +116,15 @@ export default class SideNav extends Vue {
     box-shadow: 0 0 0 .25rem rgba(131,192,253,.5);
   }
 
-  .nav {
+  @mixin nav_wrap {
     position: absolute;
     z-index: 999;
     display: flex;
     flex-direction: column;
+  }
+
+  .nav__wrap--on {
+    @include nav_wrap;
     width: 200px;
     height: 100vh;
     border-right: 1px solid #b6b6b6;
@@ -109,10 +134,46 @@ export default class SideNav extends Vue {
     background-color: #fff;
   }
 
+  .nav__wrap--off {
+    @include nav_wrap;
+    width: 100px;
+  }
+
+  /* fold side nav animation */
+  .fold-nav-enter-active, .fold-nav-leave-active {
+    transition: all .2s;
+  }
+
+  .fold-nav-enter, .fold-nav-leave-to {
+    transform: translateX(-100%);
+  }
+
   .nav__item-wrap {
     display: flex;
     flex-direction: column;
-    margin: 25px 0;
+    margin: 5px 0;
+  }
+
+  .nav__icon-row {
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0 20px 15px;
+  }
+
+  .nav__icon-row--rev {
+    display: flex;
+    flex-direction: row-reverse;
+    margin: 7px 0;
+  }
+
+  .nav__icon-wrap {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    line-height: .5;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
   }
 
   .nav__pri-cat {
