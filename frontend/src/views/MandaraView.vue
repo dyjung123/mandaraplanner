@@ -62,6 +62,7 @@ import {
   Component,
 } from 'vue-property-decorator';
 import SideNav from '../components/SideNav.vue';
+import { Coord, MyGoal } from '../types/goals';
 
 @Component({
   components: {
@@ -70,7 +71,7 @@ import SideNav from '../components/SideNav.vue';
 })
 export default class MandaraView extends Vue {
 
-  myGoals: object = {};
+  myGoals: MyGoal = {};
 
   private mandaraLevel: number = 2;
 
@@ -78,9 +79,9 @@ export default class MandaraView extends Vue {
 
   private nameState: boolean | null = null;
 
-  private clickedRowCol: object = {
-    row: '',
-    col: '',
+  private clickedRowCol: Coord = {
+    rowCoord: null,
+    colCoord: null,
   };
 
   // get
@@ -94,30 +95,22 @@ export default class MandaraView extends Vue {
   }
 
   created() {
-    const storedMandaraPlanner: object | null = JSON.parse(localStorage.getItem('mandala_planner'));
+    const storedMandaraPlanner: MyGoal | null = JSON.parse(localStorage.getItem('mandala_planner')!);
 
     if (storedMandaraPlanner) {
       this.myGoals = storedMandaraPlanner;
-      this.linkBetweenPairGoals(storedMandaraPlanner);
     } else {
       this.initMyGoals();
-      this.linkBetweenPairGoals();
     }
+    this.linkBetweenPairGoals();
   }
 
-  private linkBetweenPairGoals(storedPlan: object): void {
-    for (let row = 1; row <= this.boxSideLength; row += 1) {
-      for (let col = 1; col <= this.boxSideLength; col += 1) {
-        if (!storedPlan && this.isMainGoal(row - 1, col - 1) && !this.isRootGoal(row - 1, col - 1)) {
-          const { mainGoalRowIdx, mainGoalColIdx } = this.getPairIdx(row - 1, col - 1);
-          const goal = { goal: '' }
-          this.myGoals[`row${row}`][`col${col}`] = goal;
-          this.myGoals[`row${mainGoalRowIdx + 1}`][`col${mainGoalColIdx + 1}`] = goal;
-        }
-
-        if (storedPlan && this.isMainGoal(row - 1, col - 1) && !this.isRootGoal(row - 1, col - 1)) {
-          const { mainGoalRowIdx, mainGoalColIdx } = this.getPairIdx(row - 1, col - 1);
-          this.myGoals[`row${row}`][`col${col}`] = this.myGoals[`row${mainGoalRowIdx + 1}`][`col${mainGoalColIdx + 1}`];
+  private linkBetweenPairGoals(): void {
+    for (let row = 2; row <= this.boxSideLength; row += 3) {
+      for (let col = 2; col <= this.boxSideLength; col += 3) {
+        if (this.isMainGoal(row - 1, col - 1) && !this.isRootGoal(row - 1, col - 1)) {
+          const { rowCoord, colCoord } = this.getPairIdx(row - 1, col - 1);
+          this.myGoals[`row${row}`][`col${col}`] = this.myGoals[`row${rowCoord! + 1}`][`col${colCoord! + 1}`];
         }
       }
     }
@@ -146,20 +139,20 @@ export default class MandaraView extends Vue {
       return false;
     }
 
-    const { mainGoalRowIdx, mainGoalColIdx } = this.getPairIdx(rowIdx, colIdx);
+    const { rowCoord, colCoord } = this.getPairIdx(rowIdx, colIdx);
 
-    if (this.myGoals[`row${mainGoalRowIdx + 1}`][`col${mainGoalColIdx + 1}`].goal.length > 0) {
+    if (this.myGoals[`row${rowCoord! + 1}`][`col${colCoord! + 1}`].goal.length > 0) {
       return true;
     }
     return false;
   }
 
-  private getPairIdx(rowIdx: number, colIdx: number): object {
+  private getPairIdx(rowIdx: number, colIdx: number): Coord {
     const parentGoalRowIdx = 1 + (rowIdx - 1) / 3 ** (this.mandaraLevel - 1);
     const parentGoalColIdx = 1 + (colIdx - 1) / 3 ** (this.mandaraLevel - 1);
 
-    let mainGoalRowIdx = Math.floor(this.boxSideLength / 2);
-    let mainGoalColIdx = Math.floor(this.boxSideLength / 2);
+    let mainGoalRowIdx: number = Math.floor(this.boxSideLength / 2);
+    let mainGoalColIdx: number = Math.floor(this.boxSideLength / 2);
 
     if (parentGoalRowIdx === 1) {
       mainGoalRowIdx -= 1;
@@ -176,7 +169,7 @@ export default class MandaraView extends Vue {
     } else if (parentGoalColIdx === 3) {
       mainGoalColIdx += 1;
     }
-    return { mainGoalRowIdx, mainGoalColIdx };
+    return { rowCoord: mainGoalRowIdx, colCoord: mainGoalColIdx };
   }
 
   isInputMainGoal(rowIdx: number, colIdx: number): boolean {
@@ -207,21 +200,21 @@ export default class MandaraView extends Vue {
 
   showModal(rowKey: number, colKey: number): void {
     this.$bvModal.show('input-goal-modal');
-    this.clickedRowCol.row = rowKey + 1;
-    this.clickedRowCol.col = colKey + 1;
+    this.clickedRowCol.rowCoord = rowKey + 1;
+    this.clickedRowCol.colCoord = colKey + 1;
   }
 
   onShowModal(): void {
     this.resetModal();
     this.$nextTick(() => {
-      this.goal = this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal;
+      this.goal = this.myGoals[`row${this.clickedRowCol.rowCoord}`][`col${this.clickedRowCol.colCoord}`].goal;
     });
   }
 
   onHideModal(): void {
     this.resetModal();
-    this.clickedRowCol.row = '';
-    this.clickedRowCol.col = '';
+    this.clickedRowCol.rowCoord = null;
+    this.clickedRowCol.colCoord = null;
   }
 
   resetModal(): void {
@@ -245,7 +238,7 @@ export default class MandaraView extends Vue {
       return;
     }
 
-    this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal = this.goal;
+    this.myGoals[`row${this.clickedRowCol.rowCoord}`][`col${this.clickedRowCol.colCoord}`].goal = this.goal;
     this.$refs.sideNav.autoSaveLocalStorage();
 
     this.$nextTick(() => {
@@ -254,7 +247,7 @@ export default class MandaraView extends Vue {
   }
 
   clear(): void {
-    this.myGoals[`row${this.clickedRowCol.row}`][`col${this.clickedRowCol.col}`].goal = '';
+    this.myGoals[`row${this.clickedRowCol.rowCoord}`][`col${this.clickedRowCol.colCoord}`].goal = '';
     this.$refs.sideNav.autoSaveLocalStorage();
 
     this.$nextTick(() => {
