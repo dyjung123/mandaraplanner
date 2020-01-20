@@ -1,4 +1,4 @@
-# mandaraplanner
+# Mandala planner
 ## Link
 * YouTube: [Mandala Planner](https://youtu.be/_WSMohQop0o, "youtube link")
 
